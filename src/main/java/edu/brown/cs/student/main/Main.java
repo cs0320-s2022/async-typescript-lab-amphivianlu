@@ -83,7 +83,7 @@ public final class Main {
     // Allows requests from any domain (i.e., any URL). This makes development
     // easier, but it’s not a good idea for deployment.
     Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-    Spark.post("/results", new ResultsHandler());
+    Spark.post("/route", new ResultsHandler());
   }
 
   /**
@@ -105,7 +105,8 @@ public final class Main {
 
   /**
    * Handles requests for horoscope matching on an input
-   * 
+   *
+   * @throws JSONException
    * @return GSON which contains the result of MatchMaker.makeMatches
    */
   private static class ResultsHandler implements Route {
@@ -118,25 +119,13 @@ public final class Main {
       String sun = jsReq.getString("sun");
       String moon = jsReq.getString("moon");
       String rising = jsReq.getString("rising");
-      /*JSONObject object = null;
-      String sun = "";
-      String moon = "";
-      String rising = "";
-      try {
-        object = new JSONObject(req.body());
-        sun = object.getString("sun");
-        moon = object.getString("moon");
-        rising = object.getString("rising");
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }*/
       // TODO: use the MatchMaker.makeMatches method to get matches
       List<String> matches = MatchMaker.makeMatches(sun, moon, rising);
       // TODO: create an immutable map using the matches
-      ImmutableMap<String, Object> map = ImmutableMap.of("matches", matches);
+      ImmutableMap<String, Object> matchMap = ImmutableMap.of("matches", matches);
       // TODO: return a json of the suggestions (HINT: use GSON.toJson())
       Gson GSON = new Gson();
-      return GSON.toJson(map);
+      return GSON.toJson(matchMap);
     }
   }
 }
